@@ -7,15 +7,15 @@ A 3D N-body gravitational simulation built in Unity using Universal Render Pipel
 
 ---
 
-## 🌟 Key Features
+##  Key Features
 
-### 🌌 1. General Relativity Spacetime Fabric Distortion
+###  1. General Relativity Spacetime Fabric Distortion
 - **3D Volumetric String Grid Mesh**: Renders a 3D interconnected wireframe net of spacetime grid lines ($16 \times 12 \times 16$) using `MeshTopology.Lines`.
 - **Plummer Potential Gravity Bowls**: Gravitational potential wells sag downward and contract inward smoothly without vertex singularities or spiky cones:
   $$\Delta y = -\frac{\lambda \cdot m_j}{\sqrt{\text{dist}^2 + \beta^2}}$$
 - **Custom HLSL Wireframe Shader**: [`SpacetimeFabricWireframe.shader`](Assets/Shaders/Renderers/SpacetimeFabricWireframe.shader) colors grid strings dynamically based on gravitational potential depth.
 
-### 🪐 2. N-Body Physics Engine (`VelocityVerlet`)
+###  2. N-Body Physics Engine (`VelocityVerlet`)
 - 2nd-order **Velocity Verlet** integration for energy conservation across long orbits.
 - **Physical Unit Systems**:
   - **Astronomical AU Mode**: $G = 39.4784176$ ($4\pi^2 \, \text{AU}^3 \cdot M_\odot^{-1} \cdot \text{yr}^{-2}$), distances in AU, masses in Solar Masses ($M_\odot$), time in Years.
@@ -23,18 +23,18 @@ A 3D N-body gravitational simulation built in Unity using Universal Render Pipel
   - **Real SI Mode**: Metric SI constants.
 - **Chaotic Butterfly Effect**: Micro-perturbation ($10^{-3}$) injected on resets to trigger 3-body chaotic orbital divergence.
 
-### 🎥 3. Multi-Target Interactive Orbit Camera
+###  3. Multi-Target Interactive Orbit Camera
 - **Dynamic Center of Mass Mode**: Tracks the weighted center of mass of all celestial bodies simultaneously.
 - **Specific Object Lock Mode**: Focuses and follows individual stars/planets.
 - **3D Click-to-Select**: Click directly on any celestial sphere in 3D view to lock camera focus.
 - **Unity Input System**: Smooth Orbit (Right Click Drag), Zoom (Scroll Wheel), Pan (Middle Click Drag).
 
-### 🎨 4. Distinct Celestial Color Palettes
+###  4. Distinct Celestial Color Palettes
 - Color-coded glowing stars and orbit trail renderers (**Electric Cyan**, **Golden Amber**, **Neon Magenta**).
 
 ---
 
-## ⌨️ Controls & Shortcuts
+##  Controls & Shortcuts
 
 | Key / Input | Action | Description |
 | :---: | :--- | :--- |
@@ -82,7 +82,7 @@ Assets/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 1. Open **Unity 6 (6000.0.46f1)** or any URP-compatible Unity 2022/2023 version.
 2. Clone this repository into your local projects directory:
