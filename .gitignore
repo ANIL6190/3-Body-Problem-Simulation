@@ -1,0 +1,32 @@
+# Unity Generated Files
+/[L|l]ibrary/
+/[T|t]emp/
+/[O|o]bj/
+/[B|b]uild/
+/[B|b]uilds/
+/[L|l]ogs/
+/[U|u]ser[S|s]ettings/
+/[M|m]emoryCaptures/
+
+# VS & IDE Files
+.vs/
+.vsconfig
+*.csproj
+*.unityproj
+*.sln
+*.slnx
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+
+# OS Generated
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db

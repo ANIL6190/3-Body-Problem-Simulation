@@ -1,0 +1,54 @@
+// ============================================================================
+// SpacetimeWarp.compute
+// GPU kernel calculating smooth non-singular gravitational potential well displacement
+// for spacetime grid nodes pulled toward moving celestial bodies.
+// ============================================================================
+
+#pragma kernel CSMain
+
+struct GridNode
+{
+    float3 basePosition;    // unwarped 3D rest position
+    float3 worldPosition;   // warped 3D position written by kernel
+};
+
+struct BodyData
+{
+    float3 position;        // world-space body position
+    float  mass;            // body mass
+};
+
+RWStructuredBuffer<GridNode> _NodeBuffer;
+StructuredBuffer<BodyData>   _BodyBuffer;
+
+int   _NodeCount;
+int   _BodyCount;
+float _WarpStrength;   // Elasticity factor
+float _WarpSoftening;  // Softening constant
+
+[numthreads(64, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
+{
+    uint nodeIdx = id.x;
+    if ((int)nodeIdx >= _NodeCount) return;
+
+    float3 basePos = _NodeBuffer[nodeIdx].basePosition;
+    float3 totalDisplacement = float3(0, 0, 0);
+
+    for (int b = 0; b < _BodyCount; b++)
+    {
+        float3 p_j    = _BodyBuffer[b].position;
+        float  m_j    = _BodyBuffer[b].mass;
+        float3 d_vec  = p_j - basePos;
+        float  dist2  = dot(d_vec, d_vec);
+        float  beta2  = _WarpSoftening * _WarpSoftening;
+
+        float  denom  = pow(dist2 + beta2, 1.5);
+        float3 radialPull = (d_vec * m_j * _WarpStrength * 0.15) / denom;
+        float  downwardWell = -(_WarpStrength * m_j * 1.2) / sqrt(dist2 + beta2);
+
+        totalDisplacement += radialPull + float3(0, downwardWell, 0);
+    }
+
+    _NodeBuffer[nodeIdx].worldPosition = basePos + totalDisplacement;
+}
