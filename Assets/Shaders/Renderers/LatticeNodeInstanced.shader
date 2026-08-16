@@ -8,10 +8,10 @@ Shader "3BodySim/LatticeNodeInstanced"
 {
     Properties
     {
-        [HDR] _BaseColor     ("Node Color (HDR)", Color)  = (0.1, 0.8, 1.0, 1.0)
-        _NodeScale           ("Node Scale",       Float)  = 0.15
-        _EmissiveIntensity   ("Emissive Boost",   Float)  = 2.5
-        _DepthFade           ("Depth Warp Fade",  Float)  = 0.4
+        [HDR] _BaseColor     ("Node Color (HDR)", Color)  = (0.05, 0.5, 0.8, 0.75)
+        _NodeScale           ("Node Scale",       Float)  = 0.06
+        _EmissiveIntensity   ("Emissive Boost",   Float)  = 1.1
+        _DepthFade           ("Depth Warp Fade",  Float)  = 0.25
     }
 
     SubShader
@@ -34,12 +34,7 @@ Shader "3BodySim/LatticeNodeInstanced"
             #pragma multi_compile_instancing
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-            struct GridNode
-            {
-                float3 basePosition;
-                float3 worldPosition;
-            };
+            #include "../Include/SpacetimeWarpCommon.hlsl"
 
             StructuredBuffer<GridNode> _NodeBuffer;
 
@@ -69,12 +64,13 @@ Shader "3BodySim/LatticeNodeInstanced"
                 Varyings OUT;
 
                 // Direct GPU buffer lookup via instance ID
-                float3 centerPos = _NodeBuffer[IN.instanceID].worldPosition;
-                float3 worldPos  = (IN.positionOS.xyz * _NodeScale) + centerPos;
+                float3 centerPosOS = _NodeBuffer[IN.instanceID].worldPosition;
+                float3 localPosOS  = (IN.positionOS.xyz * _NodeScale) + centerPosOS;
+                float3 worldPos    = TransformObjectToWorld(localPosOS);
 
                 OUT.positionCS  = TransformWorldToHClip(worldPos);
                 OUT.worldNormal = TransformObjectToWorldNormal(IN.normalOS);
-                OUT.depthBias   = saturate(-(centerPos.y) * _DepthFade * 0.05);
+                OUT.depthBias   = saturate(-(centerPosOS.y) * _DepthFade * 0.05);
 
                 return OUT;
             }
@@ -83,18 +79,17 @@ Shader "3BodySim/LatticeNodeInstanced"
             {
                 float3 lightDir   = normalize(float3(0.3, 1.0, 0.5));
                 float  NdotL      = saturate(dot(normalize(IN.worldNormal), lightDir));
-                float  rim        = pow(1.0 - NdotL, 3.0);
+                float  rim        = pow(1.0 - NdotL, 4.0);
 
-                half3  shallowCol = _BaseColor.rgb;
-                half3  deepCol    = half3(0.2, 1.0, 0.9) * _EmissiveIntensity;
+                half3  shallowCol = _BaseColor.rgb * 0.5;
+                half3  deepCol    = half3(0.0, 0.85, 0.75) * _EmissiveIntensity;
                 half3  nodeColor  = lerp(shallowCol, deepCol, IN.depthBias);
-                half3  emissive   = nodeColor * (_EmissiveIntensity + rim * 1.5);
+                half3  emissive   = nodeColor * (_EmissiveIntensity + rim * 0.6);
 
-                return half4(emissive, 1.0);
+                return half4(emissive, _BaseColor.a);
             }
             ENDHLSL
         }
     }
     FallBack "Universal Render Pipeline/Unlit"
 }
-

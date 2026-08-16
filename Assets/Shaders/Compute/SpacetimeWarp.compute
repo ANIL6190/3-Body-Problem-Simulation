@@ -6,17 +6,7 @@
 
 #pragma kernel CSMain
 
-struct GridNode
-{
-    float3 basePosition;    // unwarped 3D rest position
-    float3 worldPosition;   // warped 3D position written by kernel
-};
-
-struct BodyData
-{
-    float3 position;        // world-space body position
-    float  mass;            // body mass
-};
+#include "../Include/SpacetimeWarpCommon.hlsl"
 
 RWStructuredBuffer<GridNode> _NodeBuffer;
 StructuredBuffer<BodyData>   _BodyBuffer;
@@ -33,22 +23,18 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     if ((int)nodeIdx >= _NodeCount) return;
 
     float3 basePos = _NodeBuffer[nodeIdx].basePosition;
-    float3 totalDisplacement = float3(0, 0, 0);
+    float3 totalDisplacement;
+    float  accumulatedPotential;
 
-    for (int b = 0; b < _BodyCount; b++)
-    {
-        float3 p_j    = _BodyBuffer[b].position;
-        float  m_j    = _BodyBuffer[b].mass;
-        float3 d_vec  = p_j - basePos;
-        float  dist2  = dot(d_vec, d_vec);
-        float  beta2  = _WarpSoftening * _WarpSoftening;
-
-        float  denom  = pow(dist2 + beta2, 1.5);
-        float3 radialPull = (d_vec * m_j * _WarpStrength * 0.15) / denom;
-        float  downwardWell = -(_WarpStrength * m_j * 1.2) / sqrt(dist2 + beta2);
-
-        totalDisplacement += radialPull + float3(0, downwardWell, 0);
-    }
+    CalculateSpacetimeDisplacement(
+        basePos,
+        _BodyBuffer,
+        _BodyCount,
+        _WarpStrength,
+        _WarpSoftening,
+        totalDisplacement,
+        accumulatedPotential
+    );
 
     _NodeBuffer[nodeIdx].worldPosition = basePos + totalDisplacement;
 }

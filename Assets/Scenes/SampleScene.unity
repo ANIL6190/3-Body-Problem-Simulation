@@ -1189,9 +1189,9 @@ MonoBehaviour:
   renderMode: 0
   hideCelestialBodies: 0
   use3DVolumetricGrid: 1
-  gridResolution: 16
-  gridResolutionY: 12
-  gridSpacing: 2
+  gridResolution: 12
+  gridResolutionY: 8
+  gridSpacing: 2.8
   latticeY: 0
   warpStrength: 10
   warpSoftening: 2

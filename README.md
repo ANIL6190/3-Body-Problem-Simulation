@@ -1,6 +1,6 @@
 # 3-Body Problem Simulation - General Relativity & N-Body Physics in Unity URP
 
-A 3D N-body gravitational simulation built in Unity using Universal Render Pipeline (URP). Features Velocity Verlet numerical integration, real-world astrophysics unit scaling, multi-target orbit cameras, and dynamic 3D spacetime fabric grid deformation with custom HLSL shaders.
+A 3D N-body gravitational simulation built in Unity using Universal Render Pipeline (URP). Features Velocity Verlet numerical integration, real-world astrophysics unit scaling, multi-target orbit cameras, and dynamic 3D spacetime fabric grid deformation with custom HLSL shaders and GPU compute buffer pipelines.
 
 ![Unity 6](https://img.shields.org/badge/Unity-6000.0.46f1-blue.svg)
 ![License](https://img.shields.org/badge/License-MIT-green.svg)
@@ -9,11 +9,13 @@ A 3D N-body gravitational simulation built in Unity using Universal Render Pipel
 
 ##  Key Features
 
-###  1. General Relativity Spacetime Fabric Distortion
-- **3D Volumetric String Grid Mesh**: Renders a 3D interconnected wireframe net of spacetime grid lines ($16 \times 12 \times 16$) using `MeshTopology.Lines`.
-- **Plummer Potential Gravity Bowls**: Gravitational potential wells sag downward and contract inward smoothly without vertex singularities or spiky cones:
+###  1. General Relativity Spacetime Fabric Distortion & Unified GPU Compute Pipeline
+- **Unified GPU Compute Engine**: Node displacements for all visual modes (`StringFabricNet` wireframe, `VolumetricNodes` point cloud, or `Both`) are calculated in a single GPU pass via `SpacetimeWarp.compute`.
+- **Shared HLSL Source of Truth**: Unified Plummer gravity formulas and data structures defined in [`SpacetimeWarpCommon.hlsl`](Assets/Shaders/Include/SpacetimeWarpCommon.hlsl), eliminating code duplication across compute kernels and vertex shaders.
+- **3D Volumetric String Grid Mesh**: Renders an interconnected 3D wireframe net of spacetime grid lines using `MeshTopology.Lines`.
+- **Plummer Potential Gravity Bowls**: Gravitational potential wells sag downward and contract radial positions smoothly without vertex singularities or spiky cones:
   $$\Delta y = -\frac{\lambda \cdot m_j}{\sqrt{\text{dist}^2 + \beta^2}}$$
-- **Custom HLSL Wireframe Shader**: [`SpacetimeFabricWireframe.shader`](Assets/Shaders/Renderers/SpacetimeFabricWireframe.shader) colors grid strings dynamically based on gravitational potential depth.
+- **Custom HLSL Wireframe & Instanced Shaders**: [`SpacetimeFabricWireframe.shader`](Assets/Shaders/Renderers/SpacetimeFabricWireframe.shader) and [`LatticeNodeInstanced.shader`](Assets/Shaders/Renderers/LatticeNodeInstanced.shader) read compute-warped positions directly from `_NodeBuffer` with full `TransformObjectToWorld` space support.
 
 ###  2. N-Body Physics Engine (`VelocityVerlet`)
 - 2nd-order **Velocity Verlet** integration for energy conservation across long orbits.
@@ -39,6 +41,9 @@ A 3D N-body gravitational simulation built in Unity using Universal Render Pipel
 
 | Key / Input | Action | Description |
 | :---: | :--- | :--- |
+| <kbd>M</kbd> | **Cycle Visual Mode** | Cycles render modes: `StringFabricNet` $\rightarrow$ `VolumetricNodes` $\rightarrow$ `Both`. |
+| <kbd>V</kbd> | **Phantom Gravity Mode** | Toggles body visibility to reveal pure invisible gravitational field distortion. |
+| <kbd>G</kbd> | **Cycle Grid Density** | Toggles resolution between 24 (Standard), 36 (High Density), and 48 (Ultra Volumetric). |
 | <kbd>R</kbd> | **Randomize Orbits** | Generates a fresh zero-drift 3-body system ($0.5 \, M_\odot - 3.0 \, M_\odot$). |
 | <kbd>Space</kbd> | **Pause / Resume** | Toggles simulation time scale. |
 | **Left Click** | **Select 3D Body** | Click on any celestial body in 3D scene to lock camera focus. |
@@ -76,6 +81,8 @@ Assets/
 └── Shaders/
     ├── Compute/
     │   └── SpacetimeWarp.compute   # GPU kernel for grid node warping
+    ├── Include/
+    │   └── SpacetimeWarpCommon.hlsl # Shared HLSL data structures & Plummer potential displacement
     └── Renderers/
         ├── LatticeNodeInstanced.shader  # Instanced vertex shader for lattice nodes
         └── SpacetimeFabricWireframe.shader # HLSL shader for glowing wireframe string fabric

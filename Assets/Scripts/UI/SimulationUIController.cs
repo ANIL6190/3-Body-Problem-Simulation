@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Wires Canvas UI sliders and buttons to the live simulation parameters.
@@ -85,8 +86,40 @@ public class SimulationUIController : MonoBehaviour
 
     private void Update()
     {
+        HandleKeyboardShortcuts();
         UpdateFPS();
         UpdateEnergyDisplay();
+    }
+
+    private void HandleKeyboardShortcuts()
+    {
+        if (Keyboard.current == null || latticeManager == null) return;
+
+        // Press 'M' to cycle render modes: StringFabricNet -> VolumetricNodes -> Both
+        if (Keyboard.current.mKey.wasPressedThisFrame)
+        {
+            int currentMode = (int)latticeManager.renderMode;
+            int nextMode = (currentMode + 1) % 3;
+            latticeManager.renderMode = (SpacetimeLatticeManager.FabricRenderMode)nextMode;
+            Debug.Log($"[SimulationUIController] Render Mode changed to: {latticeManager.renderMode}");
+        }
+
+        // Press 'V' to toggle visibility of celestial bodies ("Phantom Gravity" mode)
+        if (Keyboard.current.vKey.wasPressedThisFrame)
+        {
+            latticeManager.hideCelestialBodies = !latticeManager.hideCelestialBodies;
+            Debug.Log($"[SimulationUIController] Phantom Gravity Mode (Hide Bodies): {latticeManager.hideCelestialBodies}");
+        }
+
+        // Press 'G' to cycle grid resolution density: 12 -> 18 -> 24
+        if (Keyboard.current.gKey.wasPressedThisFrame)
+        {
+            int currentRes = latticeManager.gridResolution;
+            int nextRes = currentRes == 12 ? 18 : (currentRes == 18 ? 24 : 12);
+            int nextResY = currentRes == 12 ? 12 : (currentRes == 18 ? 16 : 8);
+            latticeManager.RebuildGrid(nextRes, nextResY);
+            Debug.Log($"[SimulationUIController] Lattice Grid Density set to: {nextRes}×{nextResY}");
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────────
