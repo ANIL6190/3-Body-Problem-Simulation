@@ -67,6 +67,13 @@ public class NBodyIntegrator : MonoBehaviour
     [Tooltip("Mass range for randomized bodies (M☉ in Astro mode, units in Normalized mode).")]
     public Vector2 randomMassRange = new Vector2(0.5f, 3.0f);
 
+    [Header("Seed & Reproducibility")]
+    [Tooltip("If true, uses custom seed for deterministic orbital randomization and chaos noise.")]
+    public bool useCustomSeed = false;
+
+    [Tooltip("Random seed for reproducible chaos simulations.")]
+    public int randomSeed = 42;
+
     [Header("Simulation Bodies")]
     [Tooltip("All AttractorBody instances participating in the simulation (auto-populated if empty).")]
     public List<AttractorBody> bodies = new List<AttractorBody>();
@@ -88,10 +95,21 @@ public class NBodyIntegrator : MonoBehaviour
     [Range(0f, 10f)]
     public float timeScale = 1f;
 
-    [Header("Stability")]
+    [Header("Stability & Adaptive Substepping")]
     [Tooltip("Minimum allowed distance between bodies before softening kicks in (prevents infinity).")]
     [Min(0.01f)]
     public float softeningLength = 0.1f;
+
+    [Tooltip("If true, automatically subdivides integration timestep (dt) during close body encounters when accelerations exceed threshold.")]
+    public bool enableAdaptiveSubstepping = true;
+
+    [Tooltip("Maximum allowed substeps per fixed frame update to preserve performance.")]
+    [Range(1, 64)]
+    public int maxSubsteps = 16;
+
+    [Tooltip("Acceleration magnitude threshold to trigger adaptive substepping.")]
+    [Min(1f)]
+    public float maxAccelerationThreshold = 50f;
 
     // ──────────────────────────────────────────────────────────────────────────
     // Private State
@@ -202,10 +220,30 @@ public class NBodyIntegrator : MonoBehaviour
         float dt = Time.fixedDeltaTime * timeScale;
         if (dt == 0f) return;
 
-        if (integrationMode == IntegrationMode.VelocityVerlet)
-            IntegrateVelocityVerlet(dt);
-        else
-            IntegrateSymplecticEuler(dt);
+        int substeps = 1;
+        if (enableAdaptiveSubstepping)
+        {
+            float maxAccel = 0f;
+            for (int i = 0; i < bodies.Count; i++)
+            {
+                if (bodies[i] != null)
+                    maxAccel = Mathf.Max(maxAccel, bodies[i].acceleration.magnitude);
+            }
+
+            if (maxAccel > maxAccelerationThreshold)
+            {
+                substeps = Mathf.Clamp(Mathf.CeilToInt(maxAccel / maxAccelerationThreshold), 1, maxSubsteps);
+            }
+        }
+
+        float subDt = dt / substeps;
+        for (int step = 0; step < substeps; step++)
+        {
+            if (integrationMode == IntegrationMode.VelocityVerlet)
+                IntegrateVelocityVerlet(subDt);
+            else
+                IntegrateSymplecticEuler(subDt);
+        }
     }
 
     // ──────────────────────────────────────────────────────────────────────────
@@ -299,11 +337,25 @@ public class NBodyIntegrator : MonoBehaviour
     // ──────────────────────────────────────────────────────────────────────────
 
     /// <summary>
+    /// Re-seeds Unity's global RNG state if useCustomSeed is enabled.
+    /// Ensures 100% reproducible chaotic orbit generation and noise perturbation.
+    /// </summary>
+    public void InitializeRNG()
+    {
+        if (useCustomSeed)
+        {
+            Random.InitState(randomSeed);
+        }
+    }
+
+    /// <summary>
     /// Randomizes all body positions, velocities, and masses, then removes center-of-mass drift.
     /// </summary>
     public void RandomizeOrbits()
     {
         if (bodies == null || bodies.Count == 0) return;
+
+        InitializeRNG();
 
         int n = bodies.Count;
         float totalMass = 0f;
@@ -452,7 +504,9 @@ public class NBodyIntegrator : MonoBehaviour
                 break;
 
             case OrbitPreset.SunEarthMoonSystem:
-                // Real Sun - Earth - Moon System (Scaled AU / M☉)
+                // Sun - Earth - Companion System (Scaled AU / M☉)
+                // Note: Real Earth mass is ~3.003e-6 M☉. Mass is set to 0.05 M☉ (~16,000x dramatized)
+                // so that Earth's gravity visibly distorts the 3-body system and spacetime fabric.
                 unitSystem = PhysicsUnitSystem.AstronomicalAU;
                 SyncUnitSystemConstant();
 
@@ -463,8 +517,8 @@ public class NBodyIntegrator : MonoBehaviour
                 bodies[0].initialVelocity = Vector3.zero;
                 bodies[0].bodyColor = new Color(1f, 0.95f, 0.2f, 1f); // Solar Yellow
 
-                // Earth (1.0 AU, ~3.003e-6 M☉, Orbital speed = 2π ≈ 6.283 AU/yr = 29.78 km/s)
-                bodies[1].mass = 0.05f; // Scaled for visible 3-body gravitational interaction
+                // Earth (1.0 AU, ~3.003e-6 M☉ real; 0.05 M☉ dramatized for visible 3-body interaction)
+                bodies[1].mass = 0.05f;
                 bodies[1].transform.position = new Vector3(6.0f, 0f, 0f);
                 bodies[1].velocity = new Vector3(0f, 2.56f, 0f);
                 bodies[1].initialVelocity = bodies[1].velocity;
@@ -500,6 +554,8 @@ public class NBodyIntegrator : MonoBehaviour
     public void ResetSimulation()
     {
         if (!_initialized) return;
+
+        InitializeRNG();
 
         if (randomizeOnReset)
         {

@@ -240,7 +240,7 @@ public class SimulationUIController : MonoBehaviour
     {
         if (integrator == null) return;
 
-        string massUnit = (integrator.unitSystem == NBodyIntegrator.PhysicsUnitSystem.AstronomicalAU) ? " M☉" : "";
+        string massUnit = (integrator.unitSystem == NBodyIntegrator.PhysicsUnitSystem.AstronomicalAU) ? " M☉ (scaled)" : "";
 
         if (labelGConstant)   labelGConstant.text   = $"G: {integrator.gravitationalConstant:F2}";
         if (labelTimeScale)   labelTimeScale.text   = $"Speed: {integrator.timeScale:F1}×";

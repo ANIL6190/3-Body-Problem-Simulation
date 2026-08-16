@@ -88,14 +88,17 @@ Material:
     - _BumpScale: 1
     - _Cull: 2
     - _Cutoff: 0.5
+    - _DepthFade: 0.4
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
+    - _EmissiveIntensity: 2.5
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
+    - _NodeScale: 0.15
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _QueueOffset: 0

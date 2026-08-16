@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttractorBody
   mass: 1000
   initialVelocity: {x: 0, y: -4, z: -1}
+  bodyColor: {r: 0, g: 1, b: 1, a: 1}
   trailRenderer: {fileID: 667967169}
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
@@ -705,6 +706,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AttractorBody
   mass: 1000
   initialVelocity: {x: 2, y: 0, z: 0}
+  bodyColor: {r: 0, g: 1, b: 1, a: 1}
   trailRenderer: {fileID: 1156971477}
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
@@ -945,8 +947,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 922ab904b00610a4c8e3ea9ace20368c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttractorBody
-  mass: 1000
+  mass: 10000
   initialVelocity: {x: 0, y: 4, z: 1}
+  bodyColor: {r: 0, g: 1, b: 1, a: 1}
   trailRenderer: {fileID: 1208515388}
   velocity: {x: 0, y: 0, z: 0}
   acceleration: {x: 0, y: 0, z: 0}
@@ -1148,7 +1151,7 @@ Transform:
   m_GameObject: {fileID: 1208515386}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -15, y: 0, z: 0}
+  m_LocalPosition: {x: -10, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1188,11 +1191,12 @@ MonoBehaviour:
   use3DVolumetricGrid: 1
   gridResolution: 16
   gridResolutionY: 12
-  gridSpacing: 2.0
+  gridSpacing: 2
   latticeY: 0
   warpStrength: 10
   warpSoftening: 2
   warpComputeShader: {fileID: 7200000, guid: 63852b9646dc19346953e4e5d4c961b7, type: 3}
+  stringFabricMaterial: {fileID: 0}
   nodeMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   nodeMaterial: {fileID: 2100000, guid: 0917184c6705a8c449326b0cf247cbef, type: 2}
   bodyReferences:
@@ -1243,8 +1247,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc5af6b36c00814f8ce82f4cefbc2bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NBodyIntegrator
-  integrationMode: 0
   unitSystem: 1
+  integrationMode: 0
   randomizeOnStart: 1
   randomizeOnReset: 1
   injectChaosNoise: 1
@@ -1256,7 +1260,7 @@ MonoBehaviour:
   - {fileID: 1208515387}
   - {fileID: 667967168}
   - {fileID: 1156971476}
-  gravitationalConstant: 39.4784176
+  gravitationalConstant: 39.478416
   timeScale: 1
   softeningLength: 0.1
 --- !u!4 &1501570339

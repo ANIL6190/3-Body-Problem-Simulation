@@ -41,6 +41,13 @@ public class AttractorBody : MonoBehaviour
     [HideInInspector] public Vector3 previousAcceleration;
 
     // ──────────────────────────────────────────────────────────────────────────
+    // Private State
+    // ──────────────────────────────────────────────────────────────────────────
+
+    private Material _instancedMaterial;
+    private Material _trailInstancedMaterial;
+
+    // ──────────────────────────────────────────────────────────────────────────
     // Lifecycle & Auto-Wiring
     // ──────────────────────────────────────────────────────────────────────────
 
@@ -58,28 +65,37 @@ public class AttractorBody : MonoBehaviour
     public void ApplyBodyColor()
     {
         Renderer r = GetComponent<Renderer>();
-        if (r != null && r.material != null)
+        if (r != null)
         {
-            r.material.color = bodyColor;
-            if (r.material.HasProperty("_BaseColor"))
-                r.material.SetColor("_BaseColor", bodyColor);
-            if (r.material.HasProperty("_EmissionColor"))
-            {
-                r.material.EnableKeyword("_EMISSION");
-                r.material.SetColor("_EmissionColor", bodyColor * 1.5f);
-            }
+            Material targetMat = Application.isPlaying
+                ? (_instancedMaterial ??= r.material)
+                : r.sharedMaterial;
+
+            SetMaterialProperties(targetMat, bodyColor);
         }
 
         if (trailRenderer != null)
         {
-            if (trailRenderer.material != null)
-            {
-                trailRenderer.material.color = bodyColor;
-                if (trailRenderer.material.HasProperty("_BaseColor"))
-                    trailRenderer.material.SetColor("_BaseColor", bodyColor);
-            }
+            Material trailMat = Application.isPlaying
+                ? (_trailInstancedMaterial ??= trailRenderer.material)
+                : trailRenderer.sharedMaterial;
+
+            SetMaterialProperties(trailMat, bodyColor);
             trailRenderer.startColor = bodyColor;
             trailRenderer.endColor = new Color(bodyColor.r, bodyColor.g, bodyColor.b, 0f);
+        }
+    }
+
+    private static void SetMaterialProperties(Material mat, Color color)
+    {
+        if (mat == null) return;
+        mat.color = color;
+        if (mat.HasProperty("_BaseColor"))
+            mat.SetColor("_BaseColor", color);
+        if (mat.HasProperty("_EmissionColor"))
+        {
+            mat.EnableKeyword("_EMISSION");
+            mat.SetColor("_EmissionColor", color * 1.5f);
         }
     }
 
@@ -91,6 +107,8 @@ public class AttractorBody : MonoBehaviour
     private void OnValidate()
     {
         AutoWireTrailRenderer();
+        if (!Application.isPlaying)
+            ApplyBodyColor();
     }
 
     private void AutoWireTrailRenderer()

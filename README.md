@@ -17,11 +17,12 @@ A 3D N-body gravitational simulation built in Unity using Universal Render Pipel
 
 ###  2. N-Body Physics Engine (`VelocityVerlet`)
 - 2nd-order **Velocity Verlet** integration for energy conservation across long orbits.
+- **Adaptive Substepping**: Dynamically subdivides integration steps ($\text{dt}$) up to $64\times$ during close body encounters when acceleration exceeds threshold to preserve energy conservation.
 - **Physical Unit Systems**:
   - **Astronomical AU Mode**: $G = 39.4784176$ ($4\pi^2 \, \text{AU}^3 \cdot M_\odot^{-1} \cdot \text{yr}^{-2}$), distances in AU, masses in Solar Masses ($M_\odot$), time in Years.
   - **Normalized Mode**: $G = 1.0$, mass range $500 - 1500$.
   - **Real SI Mode**: Metric SI constants.
-- **Chaotic Butterfly Effect**: Micro-perturbation ($10^{-3}$) injected on resets to trigger 3-body chaotic orbital divergence.
+- **Chaotic Butterfly Effect & Seed Control**: Micro-perturbation ($10^{-3}$) injected on resets for chaotic divergence, with optional `randomSeed` control for reproducible trajectory replay.
 
 ###  3. Multi-Target Interactive Orbit Camera
 - **Dynamic Center of Mass Mode**: Tracks the weighted center of mass of all celestial bodies simultaneously.
@@ -49,7 +50,7 @@ A 3D N-body gravitational simulation built in Unity using Universal Render Pipel
 | <kbd>3</kbd> | **Binary + Planet** | Circumbinary planet orbiting twin suns. |
 | <kbd>4</kbd> | **Full Random** | Randomized orbital vectors. |
 | <kbd>5</kbd> | **Alpha Centauri System** | Real Alpha Centauri A, B, and Proxima Centauri red dwarf. |
-| <kbd>6</kbd> | **Sun–Earth System** | Real solar gravitational orbit system. |
+| <kbd>6</kbd> | **Sun–Earth System** | Solar orbit system (Earth mass dramatized to $0.05 \, M_\odot$ vs real $3 \times 10^{-6} \, M_\odot$ for visible interaction). |
 
 ---
 
