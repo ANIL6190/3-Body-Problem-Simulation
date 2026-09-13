@@ -10,7 +10,11 @@ A 3D N-body gravitational simulation built in Unity using Universal Render Pipel
 ## 🎬 Simulation Preview
 
 <div align="center">
-  <video src="3%20body%20problem.mp4" controls width="100%"></video>
+  <img src="preview.gif" alt="3-Body Problem Simulation Preview" width="100%" />
+  <br />
+  <sub><b>Live 3D Spacetime Fabric Deformation & N-Body Orbital Simulation in Unity URP</b></sub>
+  <br /><br />
+  <a href="3%20body%20problem.mp4">📹 <b>Watch / Download Full High-Res Video (47s MP4)</b></a>
 </div>
 
 ---
