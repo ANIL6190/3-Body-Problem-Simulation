@@ -230,8 +230,8 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 0, g: 1, b: 1, a: 1}
+      key1: {r: 0, g: 1, b: 1, a: 0}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -782,8 +782,8 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 0, g: 1, b: 1, a: 1}
+      key1: {r: 0, g: 1, b: 1, a: 0}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -1025,8 +1025,8 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 0, g: 1, b: 1, a: 1}
+      key1: {r: 0, g: 1, b: 1, a: 0}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -1189,8 +1189,8 @@ MonoBehaviour:
   renderMode: 0
   hideCelestialBodies: 0
   use3DVolumetricGrid: 1
-  gridResolution: 12
-  gridResolutionY: 8
+  gridResolution: 42
+  gridResolutionY: 24
   gridSpacing: 2.8
   latticeY: 0
   warpStrength: 10
@@ -1256,6 +1256,8 @@ MonoBehaviour:
   randomSpawnRadius: 8
   randomVelocityScale: 2.5
   randomMassRange: {x: 0.5, y: 3}
+  useCustomSeed: 0
+  randomSeed: 42
   bodies:
   - {fileID: 1208515387}
   - {fileID: 667967168}
@@ -1263,6 +1265,9 @@ MonoBehaviour:
   gravitationalConstant: 39.478416
   timeScale: 1
   softeningLength: 0.1
+  enableAdaptiveSubstepping: 1
+  maxSubsteps: 16
+  maxAccelerationThreshold: 50
 --- !u!4 &1501570339
 Transform:
   m_ObjectHideFlags: 0

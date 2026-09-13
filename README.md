@@ -7,6 +7,14 @@ A 3D N-body gravitational simulation built in Unity using Universal Render Pipel
 
 ---
 
+## 🎬 Simulation Preview
+
+<div align="center">
+  <video src="3%20body%20problem.mp4" controls width="100%"></video>
+</div>
+
+---
+
 ##  Key Features
 
 ###  1. General Relativity Spacetime Fabric Distortion & Unified GPU Compute Pipeline
